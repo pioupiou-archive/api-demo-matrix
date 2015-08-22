@@ -26,7 +26,7 @@
   c.height = window.innerHeight;
   c.width = window.innerWidth;
 
-  var font_size = 12;
+  var font_size = 10;
   var columns = c.width/font_size;
   
   ctx.fillStyle = "#0F0";
@@ -68,7 +68,7 @@
   var socket = io.connect('http://api.pioupiou.fr/v1/push');
     socket.on("connect", function () {
     socket.emit("subscribe", "all");
-    setInterval(draw, 80);
+    setInterval(draw, 60);
   });
   socket.on("error", new_data);
   socket.on("status", new_data);
