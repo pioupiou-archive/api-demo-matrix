@@ -68,7 +68,7 @@
   var socket = io.connect('http://api.pioupiou.fr/v1/push');
     socket.on("connect", function () {
     socket.emit("subscribe", "all");
-    setInterval(draw, 60);
+    setInterval(draw, 80);
   });
   socket.on("error", new_data);
   socket.on("status", new_data);
