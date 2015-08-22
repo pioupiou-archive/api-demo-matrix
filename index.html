@@ -1,0 +1,77 @@
+<style>
+  * {margin: 0; padding: 0;}
+  body {background: black;}
+  canvas {display: block; z-index: 1}
+  a {
+    position: absolute;
+    background-color: black;
+    color: #0F0;
+    bottom: 3px;
+    right: 3px;
+    z-index: 2;
+    font-size: 10px;
+  }
+</style>
+<canvas id="c"></canvas>
+<a href="http://github.com/bacpluszero/pioupiou-matrix" target="_blank">Github</a>
+<script>
+
+  // inspired by http://thecodeplayer.com/walkthrough/matrix-rain-animation-html5-canvas-javascript
+
+  var lines = [];
+  
+  var c = document.getElementById("c");
+  var ctx = c.getContext("2d");
+
+  c.height = window.innerHeight;
+  c.width = window.innerWidth;
+
+  var font_size = 12;
+  var columns = c.width/font_size;
+  
+  ctx.fillStyle = "#0F0";
+  ctx.font = font_size + "px arial";
+  ctx.fillText("Loading...", 0, font_size);
+
+  function draw() {
+
+          ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+          ctx.fillRect(0, 0, c.width, c.height);
+          
+          ctx.fillStyle = "#0F0";
+          ctx.font = font_size + "px arial";
+          
+          lines.forEach(function (line, i) {
+            var text = line.text.shift();
+            ctx.fillText(text, line.col*font_size, line.y);
+            line.y += font_size;
+            if (line.text.length == 0) delete lines[i];
+            if (line.y > c.height) line.y = 0;
+          });
+
+  }
+
+  function new_data (data) {
+    setTimeout(function () {
+      lines.push({
+        y: Math.round(Math.random()*c.height),
+        text: JSON.stringify(data).split(""),
+        col: Math.round(Math.random()*columns)
+      });
+    }, Math.round(Math.random()*5000));
+  }
+  
+  
+</script>
+<script src="http://api.pioupiou.fr/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://api.pioupiou.fr/v1/push');
+    socket.on("connect", function () {
+    socket.emit("subscribe", "all");
+    setInterval(draw, 80);
+  });
+  socket.on("error", new_data);
+  socket.on("status", new_data);
+  socket.on("measurement", new_data);
+  socket.on("location", new_data);
+</script>
